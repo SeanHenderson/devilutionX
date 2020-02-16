@@ -26,6 +26,7 @@ extern BOOL light4flag;
 extern BOOL leveldebug;
 extern BOOL monstdebug;
 extern BOOL trigdebug; /* unused */
+extern BOOL monstinfo;
 extern int setseed;
 extern int debugmonsttypes;
 extern int PauseMode;

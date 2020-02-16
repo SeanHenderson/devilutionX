@@ -1201,9 +1201,9 @@ void DrawInfoBox()
 				ClearPanel();
 				if (monster[pcursmonst]._uniqtype) {
 					infoclr = COL_GOLD;
-					PrintUniqueHistory();
+					PrintUniqueHistory(pcursmonst);
 				} else {
-					PrintMonstHistory(monster[pcursmonst].MType->mtype);
+					PrintMonstHistory(pcursmonst);
 				}
 			} else if (pcursitem == -1) {
 				strcpy(infostr, towner[pcursmonst]._tName);
