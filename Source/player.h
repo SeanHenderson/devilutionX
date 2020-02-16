@@ -109,6 +109,7 @@ void SetPlrDex(int p, int v);
 void SetPlrVit(int p, int v);
 void InitDungMsgs(int pnum);
 void PlayDungMsgs();
+void PlrIsFriendly(int pnum, bool isFriendly);
 
 /* rdata */
 

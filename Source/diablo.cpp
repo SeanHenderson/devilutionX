@@ -111,6 +111,8 @@ BOOL StartGame(BOOL bNewGame, BOOL bSinglePlayer)
 		else
 			uMsg = WM_DIABLOADGAME;
 
+		FriendlyMode = plr[myplr].pFriendly;
+
 		run_game_loop(uMsg);
 		NetClose();
 		pfile_create_player_description(0, 0);

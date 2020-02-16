@@ -1110,6 +1110,7 @@ void CheckBtnUp()
 			break;
 		case PANBTN_FRIENDLY:
 			FriendlyMode = FriendlyMode == 0;
+			PlrIsFriendly(myplr, FriendlyMode);
 			break;
 		}
 	}

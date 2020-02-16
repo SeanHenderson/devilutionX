@@ -446,7 +446,8 @@ void LoadPlayer(int i)
 	CopyChar(tbuff, &pPlayer->pLvlLoad);
 	CopyChar(tbuff, &pPlayer->pBattleNet);
 	CopyChar(tbuff, &pPlayer->pManaShield);
-	CopyBytes(tbuff, 3, &pPlayer->bReserved);
+	CopyChar(tbuff, &pPlayer->pFriendly);
+	CopyBytes(tbuff, 2, &pPlayer->bReserved);
 	CopyShorts(tbuff, 8, &pPlayer->wReserved);
 
 	CopyInt(tbuff, &pPlayer->pDiabloKillLevel);
@@ -1172,7 +1173,8 @@ void SavePlayer(int i)
 	CopyChar(&pPlayer->pLvlLoad, tbuff);
 	CopyChar(&pPlayer->pBattleNet, tbuff);
 	CopyChar(&pPlayer->pManaShield, tbuff);
-	CopyBytes(&pPlayer->bReserved, 3, tbuff);
+	CopyChar(&pPlayer->pFriendly, tbuff);
+	CopyBytes(&pPlayer->bReserved, 2, tbuff);
 	CopyShorts(&pPlayer->wReserved, 8, tbuff);
 
 	CopyInt(&pPlayer->pDiabloKillLevel, tbuff);

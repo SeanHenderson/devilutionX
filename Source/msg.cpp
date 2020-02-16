@@ -1131,6 +1131,8 @@ DWORD ParseCmd(int pnum, TCmd *pCmd)
 		return On_SETSHIELD(pCmd, pnum);
 	case CMD_REMSHIELD:
 		return On_REMSHIELD(pCmd, pnum);
+	case CMD_PLRFRIEND:
+		return On_PLRFRIEND(pCmd, pnum);
 	}
 
 	if (pCmd->bCmd < CMD_DLEVEL_0 || pCmd->bCmd > CMD_DLEVEL_END) {
@@ -2344,7 +2346,7 @@ DWORD On_PLAYER_JOINLEVEL(TCmd *pCmd, int pnum)
 		if (plr[pnum]._pName[0] && !plr[pnum].plractive) {
 			plr[pnum].plractive = TRUE;
 			gbActivePlayers++;
-			EventPlrMsg("Player '%s' (level %d) just joined the game", plr[pnum]._pName, plr[pnum]._pLevel);
+			EventPlrMsg("Player '%s' (level %d) who %s you has just joined the game.", plr[pnum]._pName, plr[pnum]._pLevel, plr[pnum].pFriendly ? "loves" : "hates");
 		}
 
 		if (plr[pnum].plractive && myplr != pnum) {
@@ -2604,5 +2606,20 @@ DWORD On_REMSHIELD(TCmd *pCmd, int pnum)
 
 	return sizeof(*pCmd);
 }
+
+DWORD On_PLRFRIEND(TCmd *pCmd, int pnum)
+{
+	TCmdParam1 *p = (TCmdParam1 *)pCmd;
+
+	if (pnum != myplr)
+		if (gbBufferMsgs != 1) {
+			plr[pnum].pFriendly = p->wParam1;
+			EventPlrMsg("Player '%s' now %s you!", plr[pnum]._pName, plr[pnum].pFriendly ? "loves" : "hates");
+		}
+			
+
+	return sizeof(*p);
+}
+
 
 DEVILUTION_END_NAMESPACE

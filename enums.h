@@ -2259,6 +2259,7 @@ typedef enum _cmd_id {
 	FAKE_CMD_SETID,
 	FAKE_CMD_DROPID,
 	NUM_CMDS,
+	CMD_PLRFRIEND,
 } _cmd_id;
 
 typedef enum _talker_id {

@@ -834,7 +834,7 @@ BOOL Plr2PlrMHit(int pnum, int p, int mindam, int maxdam, int dist, int mtype, B
 {
 	int tac, resper, dam, blk, blkper, hper, hit;
 
-	if (plr[p]._pInvincible) {
+	if (plr[p]._pInvincible || plr[pnum].pFriendly || plr[p].pFriendly) { 
 		return FALSE;
 	}
 
