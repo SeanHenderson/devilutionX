@@ -929,10 +929,8 @@ void InitMonsters()
 	if (gbMaxPlayers != 1)
 		CheckDungeonClear();
 	if (!setlevel) {
-		AddMonster(1, 0, 0, 0, FALSE);
-		AddMonster(1, 0, 0, 0, FALSE);
-		AddMonster(1, 0, 0, 0, FALSE);
-		AddMonster(1, 0, 0, 0, FALSE);
+		for (int j = 0; j < MAX_PLRS; j++)
+			AddMonster(1, 0, 0, 0, FALSE);
 	}
 #ifndef SPAWN
 	if (!setlevel && currlevel == 16)
@@ -1029,10 +1027,8 @@ void SetMapMonsters(BYTE *pMap, int startx, int starty)
 	int mtype;
 
 	AddMonsterType(MT_GOLEM, 2);
-	AddMonster(1, 0, 0, 0, FALSE);
-	AddMonster(1, 0, 0, 0, FALSE);
-	AddMonster(1, 0, 0, 0, FALSE);
-	AddMonster(1, 0, 0, 0, FALSE);
+	for (int k = 0; k < MAX_PLRS; k++)
+		AddMonster(1, 0, 0, 0, FALSE);
 	if (setlevel && setlvlnum == SL_VILEBETRAYER) {
 		AddMonsterType(UniqMonst[UMT_LAZURUS].mtype, 4);
 		AddMonsterType(UniqMonst[UMT_RED_VEX].mtype, 4);
