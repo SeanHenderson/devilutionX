@@ -26,6 +26,7 @@ BOOL pfile_archive_contains_game(HANDLE hsArchive, DWORD save_num);
 BOOL pfile_ui_set_class_stats(unsigned int player_class_nr, _uidefaultstats *class_stats);
 char pfile_get_player_class(unsigned int player_class_nr);
 BOOL pfile_ui_save_create(_uiheroinfo *heroinfo);
+BOOL pfile_ui_save_create_at_lvl(_uiheroinfo *heroinfo, unsigned int lvl);
 BOOL pfile_get_file_name(DWORD lvl, char *dst);
 BOOL pfile_delete_save(_uiheroinfo *hero_info);
 void pfile_read_player_from_save();

@@ -527,7 +527,7 @@ void ClearPlrRVars(PlayerStruct *p)
 /**
  * @param c plr_classes value
  */
-void CreatePlayer(int pnum, char c)
+void CreatePlayer(int pnum, char c, int lvl)
 {
 	char val;
 	int hp, mana;
@@ -680,6 +680,7 @@ void CreatePlayer(int pnum, char c)
 	InitDungMsgs(pnum);
 	CreatePlrItems(pnum);
 	SetRndSeed(0);
+	UpgradeCharacterToLevel(lvl);
 }
 
 int CalcStatDiff(int pnum)
@@ -751,6 +752,21 @@ void NextPlrLevel(int pnum)
 
 	if (sgbControllerActive)
 		FocusOnCharInfo();
+}
+
+void UpgradeCharacterToLevel(int lvl)
+{
+	plr[myplr]._pExperience = ExpLvlsTbl[lvl - 1];
+	int levels = plr[myplr]._pLevel - lvl;
+
+	for (int i = 0; i > levels; i--) {
+		NextPlrLevel(myplr);
+	}
+
+	if (lvl == 50) {
+		MaxSpellsCheat();
+	}
+	
 }
 
 void AddPlrExperience(int pnum, int lvl, int exp)
