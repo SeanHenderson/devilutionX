@@ -5021,35 +5021,23 @@ void M_FallenFear(int x, int y)
 	}
 }
 
-void PrintMonstHistory(int mt)
+void PrintMonstHistory(int mi)
 {
+	int mt = monster[mi].MType->mtype;
 	int minHP, maxHP, res;
 
 	sprintf(tempstr, "Total kills : %i", monstkills[mt]);
 	AddPanelString(tempstr, TRUE);
-	if (monstkills[mt] >= 30) {
-		minHP = monsterdata[mt].mMinHP;
-		maxHP = monsterdata[mt].mMaxHP;
-		if (gbMaxPlayers == 1) {
-			minHP = monsterdata[mt].mMinHP >> 1;
-			maxHP = monsterdata[mt].mMaxHP >> 1;
-		}
-		if (minHP < 1)
-			minHP = 1;
-		if (maxHP < 1)
-			maxHP = 1;
-		if (gnDifficulty == DIFF_NIGHTMARE) {
-			minHP = 3 * minHP + 1;
-			maxHP = 3 * maxHP + 1;
-		}
-		if (gnDifficulty == DIFF_HELL) {
-			minHP = 4 * minHP + 3;
-			maxHP = 4 * maxHP + 3;
-		}
-		sprintf(tempstr, "Hit Points : %i-%i", minHP, maxHP);
+
+	if (monstkills[mt] >= 30 || monstinfo) {
+
+		sprintf(tempstr, "Hit Points : (%i/%i)", monster[mi]._mhitpoints >> 6, monster[mi]._mmaxhp >> 6);
+		AddPanelString(tempstr, TRUE);
+
+		sprintf(tempstr, "Damage: %i-%i %i-%i", monster[mi].mMinDamage, monster[mi].mMaxDamage, monster[mi].mMinDamage2, monster[mi].mMaxDamage2);
 		AddPanelString(tempstr, TRUE);
 	}
-	if (monstkills[mt] >= 15) {
+	if (monstkills[mt] >= 15 || monstinfo) {
 		if (gnDifficulty != DIFF_HELL)
 			res = monsterdata[mt].mMagicRes;
 		else
@@ -5083,12 +5071,21 @@ void PrintMonstHistory(int mt)
 			}
 		}
 	}
+
 	pinfoflag = TRUE;
 }
 
-void PrintUniqueHistory()
+void PrintUniqueHistory(int mi)
 {
 	int res;
+
+	if (monstinfo) {
+		sprintf(tempstr, "Hit Points : (%i/%i)", monster[mi]._mhitpoints >> 6, monster[mi]._mmaxhp >> 6);
+		AddPanelString(tempstr, TRUE);
+
+		sprintf(tempstr, "Damage: %i-%i %i-%i", monster[mi].mMinDamage, monster[mi].mMaxDamage, monster[mi].mMinDamage2, monster[mi].mMaxDamage2);
+		AddPanelString(tempstr, TRUE);
+	}
 
 	res = monster[pcursmonst].mMagicRes & (RESIST_MAGIC | RESIST_FIRE | RESIST_LIGHTNING | IMUNE_MAGIC | IMUNE_FIRE | IMUNE_LIGHTNING);
 	if (!res) {

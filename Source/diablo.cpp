@@ -29,6 +29,7 @@ BOOL light4flag;
 BOOL leveldebug;
 BOOL monstdebug;
 BOOL trigdebug; /* unused */
+BOOL monstinfo;
 int setseed;
 int debugmonsttypes;
 int PauseMode;
@@ -379,6 +380,8 @@ void diablo_parse_flags(int argc, char **argv)
 		} else if (strcasecmp("-m", argv[i]) == 0) {
 			monstdebug = TRUE;
 			DebugMonsters[debugmonsttypes++] = SDL_atoi(argv[++i]);
+		} else if (strcasecmp("-mi", argv[i]) == 0) {
+			monstinfo = TRUE;
 		} else if (strcasecmp("-q", argv[i]) == 0) {
 			questdebug = SDL_atoi(argv[++i]);
 		} else if (strcasecmp("-r", argv[i]) == 0) {
