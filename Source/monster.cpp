@@ -450,7 +450,6 @@ void InitMonster(int i, int rd, int mtype, int x, int y)
 
 	if (gnDifficulty == DIFF_NIGHTMARE) {
 		monster[i]._mmaxhp = 3 * monster[i]._mmaxhp + 64;
-		monster[i]._mhitpoints = monster[i]._mmaxhp;
 		monster[i].mLevel += 15;
 		monster[i].mExp = 2 * (monster[i].mExp + 1000);
 		monster[i].mHit += 85;
@@ -464,7 +463,6 @@ void InitMonster(int i, int rd, int mtype, int x, int y)
 
 	if (gnDifficulty == DIFF_HELL) {
 		monster[i]._mmaxhp = 4 * monster[i]._mmaxhp + 192;
-		monster[i]._mhitpoints = monster[i]._mmaxhp;
 		monster[i].mLevel += 30;
 		monster[i].mExp = 4 * (monster[i].mExp + 1000);
 		monster[i].mHit += 120;
@@ -476,6 +474,16 @@ void InitMonster(int i, int rd, int mtype, int x, int y)
 		monster[i].mArmorClass += 80;
 		monster[i].mMagicRes = monst->MData->mMagicRes2;
 	}
+
+	if (gbActivePlayers > 1) {
+		monster[i]._mmaxhp += (int) floor(monster[i]._mmaxhp * gbActivePlayers / 2);
+		monster[i].mMinDamage = monster[i].mMinDamage + (int) floor(gbActivePlayers * monster[i].mMinDamage / 16);
+		monster[i].mMaxDamage = monster[i].mMaxDamage + (int) floor(gbActivePlayers * monster[i].mMaxDamage / 16);
+		monster[i].mMinDamage2 = monster[i].mMinDamage2 + (int) floor(gbActivePlayers * monster[i].mMinDamage2 / 16);
+		monster[i].mMaxDamage2 = monster[i].mMaxDamage2 + (int) floor(gbActivePlayers * monster[i].mMaxDamage2 / 16);
+	}
+
+	monster[i]._mhitpoints = monster[i]._mmaxhp;
 }
 
 void ClrAllMonsters()
@@ -707,7 +715,6 @@ void PlaceUniqueMonst(int uniqindex, int miniontype, int unpackfilesize)
 	if (gnDifficulty == DIFF_NIGHTMARE) {
 		Monst->mLevel += 15;
 		Monst->_mmaxhp = 3 * Monst->_mmaxhp + 64;
-		Monst->_mhitpoints = Monst->_mmaxhp;
 		Monst->mExp = 2 * (Monst->mExp + 1000);
 		Monst->mMinDamage = 2 * (Monst->mMinDamage + 2);
 		Monst->mMaxDamage = 2 * (Monst->mMaxDamage + 2);
@@ -718,13 +725,22 @@ void PlaceUniqueMonst(int uniqindex, int miniontype, int unpackfilesize)
 	if (gnDifficulty == DIFF_HELL) {
 		Monst->mLevel += 30;
 		Monst->_mmaxhp = 4 * Monst->_mmaxhp + 192;
-		Monst->_mhitpoints = Monst->_mmaxhp;
 		Monst->mExp = 4 * (Monst->mExp + 1000);
 		Monst->mMinDamage = 4 * Monst->mMinDamage + 6;
 		Monst->mMaxDamage = 4 * Monst->mMaxDamage + 6;
 		Monst->mMinDamage2 = 4 * Monst->mMinDamage2 + 6;
 		Monst->mMaxDamage2 = 4 * Monst->mMaxDamage2 + 6;
 	}
+
+	if (gbActivePlayers > 1) {
+		Monst->_mmaxhp = (int)floor(Monst->_mmaxhp * gbActivePlayers / 2);
+		Monst->mMinDamage = Monst->mMinDamage + floor(gbActivePlayers * Monst->mMinDamage / 16);
+		Monst->mMaxDamage = Monst->mMaxDamage + floor(gbActivePlayers * Monst->mMaxDamage / 16);
+		Monst->mMinDamage2 = Monst->mMinDamage2 + floor(gbActivePlayers * Monst->mMinDamage2 / 16);
+		Monst->mMaxDamage2 = Monst->mMaxDamage2 + floor(gbActivePlayers * Monst->mMaxDamage2 / 16);
+	}
+
+	Monst->_mhitpoints = Monst->_mmaxhp;
 
 	sprintf(filestr, "Monsters\\Monsters\\%s.TRN", Uniq->mTrnName);
 	LoadFileWithMem(filestr, &pLightTbl[256 * (uniquetrans + 19)]);
@@ -963,6 +979,7 @@ void InitMonsters()
 		if (nummonsters + numplacemonsters > 190)
 			numplacemonsters = 190 - nummonsters;
 		totalmonsters = nummonsters + numplacemonsters;
+
 		for (i = 0; i < nummtypes; i++) {
 			if (Monsters[i].mPlaceFlags & 1) {
 				scattertypes[numscattypes] = i;

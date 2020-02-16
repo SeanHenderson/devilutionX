@@ -899,11 +899,11 @@ void recv_plrinfo(int pnum, TCmdPlrInfoHdr *p, BOOL recv)
 	gbActivePlayers++;
 
 	if (sgbPlayerTurnBitTbl[pnum] != 0) {
-		szEvent = "Player '%s' (level %d) who %s you has just joined the game.";
+		szEvent = "Player '%s' (level %d) just joined the game. Diablos minions grow stronger.";
 	} else {
-		szEvent = "Player '%s' (level %d) who %s you is already in the game.";
-
-	EventPlrMsg(szEvent, plr[pnum]._pName, plr[pnum]._pLevel,plr[pnum].pFriendly ? "loves" : "hates");
+		szEvent = "Player '%s' (level %d) is already in the game. Diablos minions grow stronger.";
+	}
+	EventPlrMsg(szEvent, plr[pnum]._pName, plr[pnum]._pLevel);
 
 	LoadPlrGFX(pnum, PFILE_STAND);
 	SyncInitPlr(pnum);
