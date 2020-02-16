@@ -2344,7 +2344,7 @@ DWORD On_PLAYER_JOINLEVEL(TCmd *pCmd, int pnum)
 		if (plr[pnum]._pName[0] && !plr[pnum].plractive) {
 			plr[pnum].plractive = TRUE;
 			gbActivePlayers++;
-			EventPlrMsg("Player '%s' (level %d) just joined the game", plr[pnum]._pName, plr[pnum]._pLevel);
+			EventPlrMsg("Player '%s' (level %d) just joined the game.  The monsters have grown stronger", plr[pnum]._pName, plr[pnum]._pLevel);
 		}
 
 		if (plr[pnum].plractive && myplr != pnum) {
