@@ -208,6 +208,8 @@ bool IsDifficultyAllowed(int value)
 	}
 	selgame_Free();
 
+	selgame_Free();
+
 	if (value == 1)
 		UiSelOkDialog(title, "Your character must reach level 20 before you can enter a multiplayer game of Nightmare difficulty.", false);
 	if (value == 2)
