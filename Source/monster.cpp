@@ -918,7 +918,7 @@ void LoadDiabMonsts()
 
 void InitMonsters()
 {
-	int na, nt;
+	int na, nt, spacing;
 	int i, s, t;
 	int numplacemonsters;
 	int mtype;
@@ -954,17 +954,43 @@ void InitMonsters()
 #ifndef SPAWN
 		PlaceUniques();
 #endif
+		//leave space for objects and theme monsters
+		//currently MAXMONSTERS needs to be larger than 200 for this to work
+		//this needs more work
+		int MAXLEVELMONSTERS = MAXMONSTERS - MAXOBJECTS - 200; 
 		na = 0;
 		for (s = 16; s < 96; s++)
 			for (t = 16; t < 96; t++)
-				if (!SolidLoc(s, t))
+				if (MonstPlace(s, t)) 
 					na++;
-		numplacemonsters = na / 30;
-		if (gbMaxPlayers != 1)
+
+		spacing = 30; //1 monster per 30 free spaces
+
+		// adjust to add monsters per number of players
+
+		if (gbActivePlayers > 4) {
+			spacing = 20; //1 monster per 20 free spaces
+		}
+
+		if (gbActivePlayers > 8) {
+			spacing = 10; //1 monster per 10 free spaces
+		}
+
+		if (gbActivePlayers > 12) {
+			spacing = 5; //1 monster per 5 free spaces
+		}
+
+		numplacemonsters = (na / spacing);
+
+		//keep old behaviour for up to 4 players
+		if (gbMaxPlayers != 1 && gbActivePlayers <= 4) {
 			numplacemonsters += numplacemonsters >> 1;
-		if (nummonsters + numplacemonsters > 190)
-			numplacemonsters = 190 - nummonsters;
+		}
+
+		if (nummonsters + numplacemonsters > MAXLEVELMONSTERS)
+			numplacemonsters = MAXLEVELMONSTERS - nummonsters;
 		totalmonsters = nummonsters + numplacemonsters;
+
 		for (i = 0; i < nummtypes; i++) {
 			if (Monsters[i].mPlaceFlags & 1) {
 				scattertypes[numscattypes] = i;
