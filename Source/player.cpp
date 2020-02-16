@@ -1,4 +1,5 @@
 #include "all.h"
+#include "../3rdParty/Storm/Source/storm.h"
 
 DEVILUTION_BEGIN_NAMESPACE
 
@@ -17,6 +18,8 @@ BYTE plr_gfx_bflag = 0;
 int plr_sframe_size;
 int deathdelay;
 int plr_dframe_size;
+BOOL runInTownChecked = FALSE;
+BOOL runInTown = TRUE;
 
 const char ArmourChar[4] = { 'L', 'M', 'H', 0 };
 const char WepChar[10] = { 'N', 'U', 'S', 'D', 'B', 'A', 'M', 'H', 'T', 0 };
@@ -1217,15 +1220,26 @@ void PM_ChangeLightOff(int pnum)
 	ChangeLightOff(plr[pnum]._plid, x, y);
 }
 
+int GetVelocityMultiplier()
+{
+	if (!runInTownChecked) {
+		runInTown = getIniBool("devilutionx", "run in town", true);
+	}
+	return (currlevel == 0 && runInTown ? 2 : 1);
+}
+
 void PM_ChangeOffset(int pnum)
 {
-	int px, py;
+	int px, py, velocityMultiplier;
+
+	velocityMultiplier = GetVelocityMultiplier();
 
 	if ((DWORD)pnum >= MAX_PLRS) {
 		app_fatal("PM_ChangeOffset: illegal player %d", pnum);
 	}
 
-	plr[pnum]._pVar8++;
+	plr[pnum]._pVar8 += velocityMultiplier;
+
 	px = plr[pnum]._pVar6 / 256;
 	py = plr[pnum]._pVar7 / 256;
 
@@ -2139,6 +2153,27 @@ BOOL PM_DoStand(int pnum)
 	return FALSE;
 }
 
+void PM_DoWalkSound(int pnum)
+{
+	bool playSound = FALSE;
+	int pAnimFrame = plr[pnum]._pAnimFrame;
+	int pWFrames = plr[pnum]._pWFrames;
+
+	if (GetVelocityMultiplier() == 1) {
+		if (pWFrames == 8) {
+			playSound = pAnimFrame == 3 || pAnimFrame == 7;
+		} else {
+			playSound = pAnimFrame == 3 || pAnimFrame == 4;
+		}
+	} else {
+		playSound = pAnimFrame == 3 || pAnimFrame == 4 || pAnimFrame == 7 || pAnimFrame == 8;
+	}
+
+	if (playSound) {
+		PlaySfxLoc(PS_WALK1, plr[pnum].WorldX, plr[pnum].WorldY);
+	}
+}
+
 BOOL PM_DoWalk(int pnum)
 {
 	int anim_len;
@@ -2147,11 +2182,7 @@ BOOL PM_DoWalk(int pnum)
 		app_fatal("PM_DoWalk: illegal player %d", pnum);
 	}
 
-	if (plr[pnum]._pAnimFrame == 3
-	    || (plr[pnum]._pWFrames == 8 && plr[pnum]._pAnimFrame == 7)
-	    || (plr[pnum]._pWFrames != 8 && plr[pnum]._pAnimFrame == 4)) {
-		PlaySfxLoc(PS_WALK1, plr[pnum].WorldX, plr[pnum].WorldY);
-	}
+	PM_DoWalkSound(pnum);
 
 	anim_len = 8;
 	if (currlevel != 0) {
@@ -2201,11 +2232,7 @@ BOOL PM_DoWalk2(int pnum)
 		app_fatal("PM_DoWalk2: illegal player %d", pnum);
 	}
 
-	if (plr[pnum]._pAnimFrame == 3
-	    || (plr[pnum]._pWFrames == 8 && plr[pnum]._pAnimFrame == 7)
-	    || (plr[pnum]._pWFrames != 8 && plr[pnum]._pAnimFrame == 4)) {
-		PlaySfxLoc(PS_WALK1, plr[pnum].WorldX, plr[pnum].WorldY);
-	}
+	PM_DoWalkSound(pnum);
 
 	anim_len = 8;
 	if (currlevel != 0) {
@@ -2252,11 +2279,7 @@ BOOL PM_DoWalk3(int pnum)
 		app_fatal("PM_DoWalk3: illegal player %d", pnum);
 	}
 
-	if (plr[pnum]._pAnimFrame == 3
-	    || (plr[pnum]._pWFrames == 8 && plr[pnum]._pAnimFrame == 7)
-	    || (plr[pnum]._pWFrames != 8 && plr[pnum]._pAnimFrame == 4)) {
-		PlaySfxLoc(PS_WALK1, plr[pnum].WorldX, plr[pnum].WorldY);
-	}
+	PM_DoWalkSound(pnum);
 
 	anim_len = 8;
 	if (currlevel != 0) {
@@ -3084,15 +3107,16 @@ void CheckNewPath(int pnum)
 					}
 				}
 			}
+			int velocityMultiplier = GetVelocityMultiplier();
 
 			if (currlevel != 0) {
-				xvel3 = PWVel[plr[pnum]._pClass][0];
-				xvel = PWVel[plr[pnum]._pClass][1];
-				yvel = PWVel[plr[pnum]._pClass][2];
+				xvel3 = velocityMultiplier * PWVel[plr[pnum]._pClass][0];
+				xvel = velocityMultiplier * PWVel[plr[pnum]._pClass][1];
+				yvel = velocityMultiplier * PWVel[plr[pnum]._pClass][2];
 			} else {
-				xvel3 = 2048;
-				xvel = 1024;
-				yvel = 512;
+				xvel3 = velocityMultiplier * 2048;
+				xvel = velocityMultiplier * 1024;
+				yvel = velocityMultiplier * 512;
 			}
 
 			switch (plr[pnum].walkpath[0]) {
