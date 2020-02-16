@@ -141,85 +141,131 @@ BOOL RndLocOk(int xp, int yp)
 	return FALSE;
 }
 
+bool IsValidRndLocObj(int xp ,int yp)
+{
+	return (RndLocOk(xp - 1, yp - 1)
+	    && RndLocOk(xp, yp - 1)
+	    && RndLocOk(xp + 1, yp - 1)
+	    && RndLocOk(xp - 1, yp)
+	    && RndLocOk(xp, yp)
+	    && RndLocOk(xp + 1, yp)
+	    && RndLocOk(xp - 1, yp + 1)
+	    && RndLocOk(xp, yp + 1)
+	    && RndLocOk(xp + 1, yp + 1));
+}
+
 void InitRndLocObj(int min, int max, int objtype)
 {
-	int i, xp, yp, numobjs;
+	int i, xp, yp, numobjs, attempts = 0;
+	bool contiunue = true;
 
 	numobjs = random_(139, max - min) + min;
 
 	for (i = 0; i < numobjs; i++) {
-		while (1) {
+		while (contiunue) {
 			xp = random_(139, 80) + 16;
 			yp = random_(139, 80) + 16;
-			if (RndLocOk(xp - 1, yp - 1)
-			    && RndLocOk(xp, yp - 1)
-			    && RndLocOk(xp + 1, yp - 1)
-			    && RndLocOk(xp - 1, yp)
-			    && RndLocOk(xp, yp)
-			    && RndLocOk(xp + 1, yp)
-			    && RndLocOk(xp - 1, yp + 1)
-			    && RndLocOk(xp, yp + 1)
-			    && RndLocOk(xp + 1, yp + 1)) {
+			if (IsValidRndLocObj(xp, yp))
+			{
 				AddObject(objtype, xp, yp);
 				break;
+			} else {
+				attempts++;
+				if (attempts == 1000) {
+					contiunue = false;
+					for (xp = 0; xp < 80 + 16 && !contiunue; xp++)
+						for (yp = 0; yp < 80 + 16 && !contiunue; yp++)
+							if (IsValidRndLocObj(xp, yp))
+								contiunue = true;
+				}
 			}
 		}
 	}
+}
+
+bool IsValidRndLocBigObj(int xp, int yp)
+{
+	return (RndLocOk(xp - 1, yp - 2)
+	    && RndLocOk(xp, yp - 2)
+	    && RndLocOk(xp + 1, yp - 2)
+	    && RndLocOk(xp - 1, yp - 1)
+	    && RndLocOk(xp, yp - 1)
+	    && RndLocOk(xp + 1, yp - 1)
+	    && RndLocOk(xp - 1, yp)
+	    && RndLocOk(xp, yp)
+	    && RndLocOk(xp + 1, yp)
+	    && RndLocOk(xp - 1, yp + 1)
+	    && RndLocOk(xp, yp + 1)
+	    && RndLocOk(xp + 1, yp + 1));
 }
 
 void InitRndLocBigObj(int min, int max, int objtype)
 {
-	int i, xp, yp, numobjs;
+	int i, xp, yp, numobjs, attempts = 0;
+	bool contiunue = true;
 
 	numobjs = random_(140, max - min) + min;
 	for (i = 0; i < numobjs; i++) {
-		while (1) {
+		while (contiunue) {
 			xp = random_(140, 80) + 16;
 			yp = random_(140, 80) + 16;
-			if (RndLocOk(xp - 1, yp - 2)
-			    && RndLocOk(xp, yp - 2)
-			    && RndLocOk(xp + 1, yp - 2)
-			    && RndLocOk(xp - 1, yp - 1)
-			    && RndLocOk(xp, yp - 1)
-			    && RndLocOk(xp + 1, yp - 1)
-			    && RndLocOk(xp - 1, yp)
-			    && RndLocOk(xp, yp)
-			    && RndLocOk(xp + 1, yp)
-			    && RndLocOk(xp - 1, yp + 1)
-			    && RndLocOk(xp, yp + 1)
-			    && RndLocOk(xp + 1, yp + 1)) {
+			if (IsValidRndLocBigObj(xp,yp)) {
 				AddObject(objtype, xp, yp);
 				break;
+			}
+			else
+			{
+				attempts++;
+				if (attempts == 1000) {
+					contiunue = false;
+					for (xp = 0; xp < 80 + 16 && !contiunue; xp++)
+						for (yp = 0; yp < 80 + 16 && !contiunue; yp++)
+							if (IsValidRndLocBigObj(xp, yp))
+								contiunue = true;
+				}
 			}
 		}
 	}
 }
 
+bool IsValidRndLocObj5x5(int xp, int yp)
+{
+	int m, n;
+	bool isValid = true;
+	for (n = -2; n <= 2 && isValid; n++) {
+		for (m = -2; m <= 2; m++) {
+			isValid = RndLocOk(xp + m, yp + n);
+		}
+	}
+	return isValid;
+}
+
+
 void InitRndLocObj5x5(int min, int max, int objtype)
 {
 	BOOL exit;
-	int xp, yp, numobjs, i, k, m, n;
+	int xp, yp, numobjs, i, attempts = 0;
+	bool contiunue = true;
 
 	numobjs = min + random_(139, max - min);
 	for (i = 0; i < numobjs; i++) {
-		k = 0;
-		for (;;) {
-			exit = TRUE;
+		while (contiunue) {
 			xp = random_(139, 80) + 16;
 			yp = random_(139, 80) + 16;
-			for (n = -2; n <= 2; n++) {
-				for (m = -2; m <= 2; m++) {
-					if (!RndLocOk(xp + m, yp + n))
-						exit = FALSE;
+			if (IsValidRndLocObj5x5(xp, yp)) {
+				AddObject(objtype, xp, yp);
+				break;
+			} else {
+				attempts++;
+				if (attempts == 1000) {
+					contiunue = false;
+					for (xp = 0; xp < 80 + 16 && !contiunue; xp++)
+						for (yp = 0; yp < 80 + 16 && !contiunue; yp++)
+							if (IsValidRndLocObj5x5(xp, yp))
+								contiunue = true;
 				}
 			}
-			if (exit)
-				break;
-			k++;
-			if (k > 20000)
-				return;
 		}
-		AddObject(objtype, xp, yp);
 	}
 }
 
