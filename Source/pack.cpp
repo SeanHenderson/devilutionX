@@ -100,6 +100,7 @@ void PackPlayer(PkPlayerStruct *pPack, int pnum, BOOL manashield)
 	}
 
 	pPack->pDiabloKillLevel = SwapLE32(pPlayer->pDiabloKillLevel);
+	pPack->pFriendly = SwapLE32(pPlayer->pFriendly);
 
 	if (gbMaxPlayers == 1 || manashield)
 		pPack->pManaShield = SwapLE32(pPlayer->pManaShield);
@@ -248,7 +249,8 @@ void UnPackPlayer(PkPlayerStruct *pPack, int pnum, BOOL killok)
 	pPlayer->pDungMsgs = 0;
 	pPlayer->pLvlLoad = 0;
 	pPlayer->pDiabloKillLevel = SwapLE32(pPack->pDiabloKillLevel);
-	pPlayer->pBattleNet = pPack->pBattleNet;
+	pPlayer->pFriendly = SwapLE32(pPack->pFriendly);
+	pPlayer->pBattleNet = pPack->pBattleNet; //BattleNet is not in pack
 	pPlayer->pManaShield = SwapLE32(pPack->pManaShield);
 }
 

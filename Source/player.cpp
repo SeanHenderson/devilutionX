@@ -506,7 +506,6 @@ void ClearPlrRVars(PlayerStruct *p)
 	// TODO: Missing debug assert p != NULL
 	p->bReserved[0] = 0;
 	p->bReserved[1] = 0;
-	p->bReserved[2] = 0;
 	p->wReserved[0] = 0;
 	p->wReserved[1] = 0;
 	p->wReserved[2] = 0;
@@ -676,6 +675,7 @@ void CreatePlayer(int pnum, char c)
 	plr[pnum].pLvlLoad = 0;
 	plr[pnum].pBattleNet = FALSE;
 	plr[pnum].pManaShield = FALSE;
+	plr[pnum].pFriendly = TRUE;
 
 	InitDungMsgs(pnum);
 	CreatePlrItems(pnum);
@@ -2535,6 +2535,14 @@ BOOL PlrHitMonst(int pnum, int m)
 	return rv;
 }
 
+void PlrIsFriendly(int pnum, bool isFriendly)
+{
+	if (pnum == myplr) {
+		NetSendCmdParam1(TRUE, CMD_PLRFRIEND, isFriendly);
+	}
+	plr[pnum].pFriendly = isFriendly;
+}
+
 BOOL PlrHitPlr(int pnum, char p)
 {
 	BOOL rv;
@@ -2546,7 +2554,7 @@ BOOL PlrHitPlr(int pnum, char p)
 
 	rv = FALSE;
 
-	if (plr[p]._pInvincible) {
+	if (plr[p]._pInvincible || plr[pnum].pFriendly || plr[p].pFriendly) {
 		return rv;
 	}
 

@@ -334,7 +334,8 @@ typedef struct PlayerStruct {
 	unsigned char pLvlLoad;
 	unsigned char pBattleNet;
 	BOOLEAN pManaShield;
-	char bReserved[3];
+	BOOLEAN pFriendly;
+	char bReserved[2];
 	short wReserved[8];
 	DWORD pDiabloKillLevel;
 	int dwReserved[7];
@@ -1402,7 +1403,8 @@ typedef struct PkPlayerStruct {
 	char pLvlLoad;
 	char pBattleNet;
 	BOOLEAN pManaShield;
-	char bReserved[3];
+	BOOLEAN pFriendly;
+	char bReserved[2];
 	short wReserved[8];
 	int pDiabloKillLevel;
 	int dwReserved[7];
