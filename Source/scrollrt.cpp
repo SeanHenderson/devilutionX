@@ -6,6 +6,17 @@ DEVILUTION_BEGIN_NAMESPACE
  * Specifies the current light entry.
  */
 int light_table_index;
+#ifdef PIXEL_LIGHT
+int testvar1 = 0; // 1 forces light system/ui drawing
+int testvar2 = 8; // changing player's light radius (2 + testvar2)
+int testvar3 = 1; // enable pixel light
+int testvar4 = 1; // 0 = normal light, 1 = fully lit
+int testvar5 = 3; // change texture blend mode
+std::map<int,std::vector<LightListStruct> > staticLights;
+int redrawLights = 0;
+bool drawRed = false;
+std::map<std::string, int> lightColorMap;
+#endif
 DWORD sgdwCursWdtOld;
 DWORD sgdwCursX;
 DWORD sgdwCursY;
@@ -101,6 +112,10 @@ static void scrollrt_draw_cursor_back_buffer()
 	int i;
 	BYTE *src, *dst;
 
+#ifdef PIXEL_LIGHT
+	// fixes the cursor during loading/entering new level by skipping this function
+	sgdwCursWdt = 0;
+#endif
 	if (sgdwCursWdt == 0) {
 		return;
 	}
@@ -521,6 +536,11 @@ static void drawRow(int x, int y, int sx, int sy, int eflag)
 
 	level_piece_id = dPiece[x][y];
 	light_table_index = dLight[x][y];
+#ifdef PIXEL_LIGHT
+	if (testvar4 != 0) {
+		light_table_index = 0;
+	}
+#endif
 
 	dst = &gpBuffer[sx + sy * BUFFER_WIDTH];
 	pMap = &dpiece_defs_map_2[x][y];
@@ -951,6 +971,14 @@ extern void DrawControllerModifierHints();
 void DrawView(int StartX, int StartY)
 {
 	DrawGame(StartX, StartY);
+#ifdef PIXEL_LIGHT
+	if (testvar3 != 0 && leveltype != DTYPE_TOWN) {
+		if (SDL_BlitSurface(pal_surface, NULL, tmp_surface, NULL) < 0)
+			ErrSdl();
+		if(SDL_FillRect(pal_surface, NULL, PALETTE_TRANSPARENT_COLOR) < 0)
+			ErrSdl();
+	}
+#endif
 	if (automapflag) {
 		DrawAutomap();
 	}
@@ -1267,6 +1295,9 @@ void DrawAndBlit()
 		return;
 	}
 
+#ifdef PIXEL_LIGHT
+	force_redraw = 255;
+#endif
 	if (SCREEN_WIDTH > PANEL_WIDTH || SCREEN_HEIGHT > VIEWPORT_HEIGHT + PANEL_HEIGHT || force_redraw == 255) {
 		drawhpflag = TRUE;
 		drawmanaflag = TRUE;
@@ -1307,6 +1338,17 @@ void DrawAndBlit()
 	scrollrt_draw_cursor_item();
 
 	DrawFPS();
+#ifdef PIXEL_LIGHT
+	if (testvar3 != 0 && leveltype != DTYPE_TOWN) {
+		redrawLights = 1;
+		if (SDL_BlitSurface(pal_surface, NULL, ui_surface, NULL) < 0)
+			ErrSdl();
+		if (SDL_FillRect(pal_surface, NULL, PALETTE_TRANSPARENT_COLOR) < 0)
+			ErrSdl();
+		if (SDL_BlitSurface(tmp_surface, NULL, pal_surface, NULL) < 0)
+			ErrSdl();
+	}
+#endif
 
 	unlock_buf(0);
 

@@ -202,6 +202,10 @@ void run_game_loop(unsigned int uMsg)
 	SetCursor_(CURSOR_NONE);
 	ClearScreenBuffer();
 	force_redraw = 255;
+#ifdef PIXEL_LIGHT
+	//deals with the transition while quitting diablo
+	redrawLights = 1;
+#endif
 	scrollrt_draw_game_screen(TRUE);
 	saveProc = SetWindowProc(saveProc);
 	/// ASSERT: assert(saveProc == GM_Game);
@@ -1157,30 +1161,55 @@ void PressChar(int vkey)
 		return;
 	case '!':
 	case '1':
+#if defined PIXEL_LIGHT && defined _DEBUG
+		testvar1 = ++testvar1 % 3;
+		CalcPlrItemVals(myplr, FALSE);
+		return;
+#endif
 		if (plr[myplr].SpdList[0]._itype != ITYPE_NONE && plr[myplr].SpdList[0]._itype != ITYPE_GOLD) {
 			UseInvItem(myplr, INVITEM_BELT_FIRST);
 		}
 		return;
 	case '@':
 	case '2':
+#if defined PIXEL_LIGHT && defined _DEBUG
+		testvar2 = ++testvar2 % 10;
+		CalcPlrItemVals(myplr, FALSE);
+		return;
+#endif
 		if (plr[myplr].SpdList[1]._itype != ITYPE_NONE && plr[myplr].SpdList[1]._itype != ITYPE_GOLD) {
 			UseInvItem(myplr, INVITEM_BELT_FIRST + 1);
 		}
 		return;
 	case '#':
 	case '3':
+#if defined PIXEL_LIGHT && defined _DEBUG
+		testvar3 = ++testvar3 % 2;
+		CalcPlrItemVals(myplr, FALSE);
+		return;
+#endif
 		if (plr[myplr].SpdList[2]._itype != ITYPE_NONE && plr[myplr].SpdList[2]._itype != ITYPE_GOLD) {
 			UseInvItem(myplr, INVITEM_BELT_FIRST + 2);
 		}
 		return;
 	case '$':
 	case '4':
+#if defined PIXEL_LIGHT && defined _DEBUG
+		testvar4 = ++testvar4 % 2;
+		CalcPlrItemVals(myplr, FALSE);
+		return;
+#endif
 		if (plr[myplr].SpdList[3]._itype != ITYPE_NONE && plr[myplr].SpdList[3]._itype != ITYPE_GOLD) {
 			UseInvItem(myplr, INVITEM_BELT_FIRST + 3);
 		}
 		return;
 	case '%':
 	case '5':
+#if defined PIXEL_LIGHT && defined _DEBUG
+		testvar5 = ++testvar5 % 4;
+		CalcPlrItemVals(myplr, FALSE);
+		return;
+#endif
 		if (plr[myplr].SpdList[4]._itype != ITYPE_NONE && plr[myplr].SpdList[4]._itype != ITYPE_GOLD) {
 			UseInvItem(myplr, INVITEM_BELT_FIRST + 4);
 		}
@@ -1700,6 +1729,10 @@ void timeout_cursor(BOOL bTimeout)
 			SetCursor_(CURSOR_HOURGLASS);
 			force_redraw = 255;
 		}
+#ifdef PIXEL_LIGHT
+		//deals with the lights while lagging
+		redrawLights = 1;
+#endif
 		scrollrt_draw_game_screen(TRUE);
 	} else if (sgnTimeoutCurs) {
 		SetCursor_(sgnTimeoutCurs);

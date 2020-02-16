@@ -69,6 +69,10 @@ void ShowProgress(unsigned int uMsg)
 
 	gbSomebodyWonGameKludge = FALSE;
 	plrmsg_delay(TRUE);
+#ifdef PIXEL_LIGHT
+	// disables light system till next DrawAndBlit which renders the dungeon
+	redrawLights = -1;
+#endif
 
 	/// ASSERT: assert(ghMainWnd);
 	saveProc = SetWindowProc(DisableInputWndProc);

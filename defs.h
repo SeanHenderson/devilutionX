@@ -97,8 +97,15 @@
 #define PAL16_RED		224
 #define PAL16_GRAY		240
 
+#define PALETTE_TRANSPARENT_COLOR 64
+
 #define SCREEN_WIDTH	640
 #define SCREEN_HEIGHT	480
+
+#define PIXEL_LIGHT 1
+#ifdef USE_SDL1
+#undef PIXEL_LIGHT
+#endif
 
 #define ZOOM_WIDTH		384
 #define ZOOM_HEIGHT		224
