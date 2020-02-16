@@ -309,6 +309,11 @@ char pfile_get_player_class(unsigned int player_class_nr)
 
 BOOL pfile_ui_save_create(_uiheroinfo *heroinfo)
 {
+	return pfile_ui_save_create_at_lvl(heroinfo, 1);
+}
+
+BOOL pfile_ui_save_create_at_lvl(_uiheroinfo *heroinfo, unsigned int lvl)
+{
 	DWORD save_num;
 	char cl;
 	PkPlayerStruct pkplr;
@@ -327,8 +332,9 @@ BOOL pfile_ui_save_create(_uiheroinfo *heroinfo)
 	mpqapi_remove_hash_entries(pfile_get_file_name);
 	strncpy(hero_names[save_num], heroinfo->name, PLR_NAME_LEN);
 	hero_names[save_num][PLR_NAME_LEN - 1] = '\0';
+
 	cl = pfile_get_player_class(heroinfo->heroclass);
-	CreatePlayer(0, cl);
+	CreatePlayer(0, cl, lvl);
 	strncpy(plr[0]._pName, heroinfo->name, PLR_NAME_LEN);
 	plr[0]._pName[PLR_NAME_LEN - 1] = '\0';
 	PackPlayer(&pkplr, 0, TRUE);

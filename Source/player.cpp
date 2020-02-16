@@ -351,10 +351,10 @@ DWORD GetPlrGFXSize(char *szCel)
 #endif
 			for (w = &WepChar[0]; *w; w++) {
 				if (szCel[0] == 'D' && szCel[1] == 'T' && *w != 'N') {
-					continue;   //Death has no weapon
+					continue; //Death has no weapon
 				}
 				if (szCel[0] == 'B' && szCel[1] == 'L' && (*w != 'U' && *w != 'D' && *w != 'H')) {
-					continue;   //No block without weapon
+					continue; //No block without weapon
 				}
 				sprintf(Type, "%c%c%c", CharChar[c], *a, *w);
 				sprintf(pszName, "PlrGFX\\%s\\%s\\%s%s.CL2", ClassStrTbl[c], Type, Type, szCel);
@@ -506,7 +506,6 @@ void ClearPlrRVars(PlayerStruct *p)
 	// TODO: Missing debug assert p != NULL
 	p->bReserved[0] = 0;
 	p->bReserved[1] = 0;
-	p->bReserved[2] = 0;
 	p->wReserved[0] = 0;
 	p->wReserved[1] = 0;
 	p->wReserved[2] = 0;
@@ -527,7 +526,7 @@ void ClearPlrRVars(PlayerStruct *p)
 /**
  * @param c plr_classes value
  */
-void CreatePlayer(int pnum, char c)
+void CreatePlayer(int pnum, char c, int lvl)
 {
 	char val;
 	int hp, mana;
@@ -676,10 +675,12 @@ void CreatePlayer(int pnum, char c)
 	plr[pnum].pLvlLoad = 0;
 	plr[pnum].pBattleNet = FALSE;
 	plr[pnum].pManaShield = FALSE;
+	plr[pnum].pFriendly = TRUE;
 
 	InitDungMsgs(pnum);
 	CreatePlrItems(pnum);
 	SetRndSeed(0);
+	UpgradeCharacterToLevel(lvl);
 }
 
 int CalcStatDiff(int pnum)
@@ -751,6 +752,24 @@ void NextPlrLevel(int pnum)
 
 	if (sgbControllerActive)
 		FocusOnCharInfo();
+}
+
+void UpgradeCharacterToLevel(int lvl)
+{
+	int b;
+	__int64 msk = 0;
+
+	plr[myplr]._pExperience = ExpLvlsTbl[lvl - 1];
+	int levels = plr[myplr]._pLevel - lvl;
+
+	for (int i = 0; i > levels; i--) {
+		NextPlrLevel(myplr);
+	}
+
+	if (lvl == 50) {
+		MaxSpellsCheat();
+	}
+	
 }
 
 void AddPlrExperience(int pnum, int lvl, int exp)
@@ -1169,7 +1188,7 @@ void PM_ChangeLightOff(int pnum)
 	}
 
 	// check if issue is upstream
-	if(plr[pnum]._plid == -1)
+	if (plr[pnum]._plid == -1)
 		return;
 
 	l = &LightList[plr[pnum]._plid];
@@ -2535,6 +2554,14 @@ BOOL PlrHitMonst(int pnum, int m)
 	return rv;
 }
 
+void PlrIsFriendly(int pnum, bool isFriendly)
+{
+	if (pnum == myplr) {
+		NetSendCmdParam1(TRUE, CMD_PLRFRIEND, isFriendly);
+	}
+	plr[pnum].pFriendly = isFriendly;
+}
+
 BOOL PlrHitPlr(int pnum, char p)
 {
 	BOOL rv;
@@ -2546,7 +2573,7 @@ BOOL PlrHitPlr(int pnum, char p)
 
 	rv = FALSE;
 
-	if (plr[p]._pInvincible) {
+	if (plr[p]._pInvincible || true /*plr[p].isFriendly || other player is friendly*/) {
 		return rv;
 	}
 
@@ -2705,7 +2732,7 @@ BOOL PM_DoAttack(int pnum)
 				m = -(dMonster[dx][dy] + 1);
 			}
 			didhit = PlrHitMonst(pnum, m);
-		} else if (dPlayer[dx][dy] && !FriendlyMode) {
+		} else if (dPlayer[dx][dy] && false /*plr[p].isFriendly || other player is friendly*/) {
 			BYTE p = dPlayer[dx][dy];
 			if (dPlayer[dx][dy] > 0) {
 				p = dPlayer[dx][dy] - 1;
@@ -3102,7 +3129,7 @@ void CheckNewPath(int pnum)
 				plr[pnum].walkpath[i - 1] = plr[pnum].walkpath[i];
 			}
 
-			plr[pnum].walkpath[MAX_PATH_LENGTH-1] = WALK_NONE;
+			plr[pnum].walkpath[MAX_PATH_LENGTH - 1] = WALK_NONE;
 
 			if (plr[pnum]._pmode == PM_STAND) {
 				StartStand(pnum, plr[pnum]._pdir);
@@ -3690,17 +3717,17 @@ void CheckPlrSpell()
 	}
 
 	if (!sgbControllerActive) {
-	if (pcurs != CURSOR_HAND
-	    || (MouseY >= PANEL_TOP && MouseX >= PANEL_LEFT && MouseX <= RIGHT_PANEL) // inside main panel
-	    || ((chrflag || questlog) && MouseX < SPANEL_WIDTH && MouseY < SPANEL_HEIGHT) // inside left panel
-		|| ((invflag || sbookflag) && MouseX > RIGHT_PANEL && MouseY < SPANEL_HEIGHT) // inside right panel
-	        && rspell != SPL_HEAL
-	        && rspell != SPL_IDENTIFY
-	        && rspell != SPL_REPAIR
-	        && rspell != SPL_INFRA
-	        && rspell != SPL_RECHARGE) {
-		return;
-	}
+		if (pcurs != CURSOR_HAND
+		    || (MouseY >= PANEL_TOP && MouseX >= PANEL_LEFT && MouseX <= RIGHT_PANEL)     // inside main panel
+		    || ((chrflag || questlog) && MouseX < SPANEL_WIDTH && MouseY < SPANEL_HEIGHT) // inside left panel
+		    || ((invflag || sbookflag) && MouseX > RIGHT_PANEL && MouseY < SPANEL_HEIGHT) // inside right panel
+		        && rspell != SPL_HEAL
+		        && rspell != SPL_IDENTIFY
+		        && rspell != SPL_REPAIR
+		        && rspell != SPL_INFRA
+		        && rspell != SPL_RECHARGE) {
+			return;
+		}
 	}
 
 	addflag = FALSE;

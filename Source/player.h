@@ -28,9 +28,10 @@ void NewPlrAnim(int pnum, BYTE *Peq, int numFrames, int Delay, int width);
 void ClearPlrPVars(int pnum);
 void SetPlrAnims(int pnum);
 void ClearPlrRVars(PlayerStruct *p);
-void CreatePlayer(int pnum, char c);
+void CreatePlayer(int pnum, char c, int lvl);
 int CalcStatDiff(int pnum);
 void NextPlrLevel(int pnum);
+void UpgradeCharacterToLevel(int lvl);
 void AddPlrExperience(int pnum, int lvl, int exp);
 void AddPlrMonstExper(int lvl, int exp, char pmask);
 void InitPlayer(int pnum, BOOL FirstTime);
@@ -108,6 +109,7 @@ void SetPlrDex(int p, int v);
 void SetPlrVit(int p, int v);
 void InitDungMsgs(int pnum);
 void PlayDungMsgs();
+void PlrIsFriendly(int pnum, bool isFriendly);
 
 /* rdata */
 
